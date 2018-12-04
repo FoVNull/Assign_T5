@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" link="/css/bootstrap/dist/css/bootstrap.min.css">
+<script src="/script/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>编辑商品信息</title>
+</head>
+<body>
+<form action="/updateGoods" enctype="multipart/form-data" method="post">
+    Name:<input name="put_name" id="put_name"><br><br>
+    Price:<input name="put_price" id="put_price"><br><br>
+    Type:<select id="s1" name="s1" class="selector">
+    <option value='0' >未选择</option>
+</select><br><br>
+    Upload Image:<input name="uploaded_file" type="file" /><br /><br />
+    Introduction:<textarea name="put_intro" id="put_intro"></textarea> <br><br>
+    <input name="put_gid" id="put_gid" style="visibility: hidden"><br>
+    <input name="put_aid" id="put_aid" style="visibility: hidden"><br>
+    <input type="submit" value="submit">
+</form>
+<div th:text="${upinfo}" style="color: #ac2925">
+</div>
+</body>
+<script>
+    var adminid=$.cookie("adminid");
+    adminid=parseInt(adminid);
+    $("#put_aid").val(adminid);
+    $(function () {
+        var str="" ;
+        $.ajax({
+            type:"POST",
+            url:"/getType",
+            success:function (list) {
+                $.each(list,function (i,value) {
+                    str+="<option value='"+value.typeid+"'>"+value.typename+"</option>";
+                })
+                $("#s1").html(str);
+            }
+        })
+    });
+    Request = {
+        QueryString : function(item){
+            var svalue = location.search.match(new RegExp("[\?\&]" + item + "=([^\&]*)(\&?)","i"));
+            return svalue ? svalue[1] : svalue;
+        }
+    };
+
+    var gid=Request.QueryString("gid");
+    gid=parseInt(gid);
+    $("#put_gid").val(gid);
+    if(gid!=null) {
+        $(function () {
+            $.ajax({
+                type: "POST",
+                data: {gid:gid},
+                url: "/goodsDetail",
+                success: function (list) {
+                    $("#put_name").val(list[0].goodsname);
+                    $("#put_price").val(list[0].price);
+                    $("#put_intro").val(list[0].intro);
+                    var tid=list[0].typeid;
+                    tid=parseInt(tid)-1;
+                    $("#s1").get(0).selectedIndex=tid;
+                }
+            })
+        })
+    }
+</script>
+</html>

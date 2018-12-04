@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<style>
+    a{text-decoration:none}
+    #header{
+        position: absolute;top: 45%;height: 4%;width: 40%;left: 30%;
+        background-color: #e7c3c3;
+        color: #0f0f0f;font-family: "Microsoft Yahei"; font-size: 24px;
+        border-color: #ce8483; border-width: 1px;border-style: solid;
+    }
+    #f1{
+        position: absolute;top: 48%;height: 28%;width: 40%;left: 30%;
+        border-width: 1px;border-color: #ce8483;border-style: solid;
+        z-index: -1;background-color: white;font-family: "STZhongsong";font-size: 16px;
+    }
+    .input{
+        width: 660px;
+    }
+    #button_gp{
+        position: absolute;right:2%
+    }
+    #header_info{
+        position: absolute;top: 20%;height: 4%;width: 40%;left: 30%;
+        background-color: #e7c3c3;
+        color: #0f0f0f;font-family: "Microsoft Yahei"; font-size: 24px;
+        border-color: #ce8483; border-width: 1px;border-style: solid;
+    }
+    #info{
+        position: absolute;top: 23%;height: 20%;width: 40%;left: 30%;
+        border-width: 1px;border-color: #ce8483;border-style: solid;
+        z-index: -1;background-color: white;font-family: "STZhongsong";font-size: 16px;
+    }
+    #page_header{
+        position: absolute;left:23%;top:5%;width: 50%;
+    }
+    .header_1{
+        width:190px;font-size: 22px;font-family: "STXinwei";color: #0f0f0f;
+    }
+</style>
+<body style="background-color: #f2dede;opacity: 80%">
+<div id="page_header">
+    <table>
+        <tr>
+            <td width="200px"><a href="/"><img src="/img/nerv.png" id="logo" width="150px" height="150px"></a></td>
+            <td class="header_1"><a href="/" class="header_1">Index</a></td>
+            <td class="header_1">News</td>
+            <td class="header_1"><a href="/goodslist?tid=1" class="header_1">Comic</a></td>
+            <td class="header_1" align="left"><a href="/goodslist?tid=2" class="header_1">DVD/Blue-ray</a></td>
+            <td class="header_1" align="center"><a href="/goodslist?tid=3" class="header_1">CD</a></td>
+            <td width="70px"><a href="/login"><img src="/img/btn_login.png" width="50px" height="50px"></a></td>
+            <td><img src="/img/btn_register.png" width="50px" height="50px"></td>
+        </tr>
+    </table>
+</div>
+    <div id="header_info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;会&nbsp;员&nbsp;须&nbsp;知</div>
+    <div id="info">
+        <br>
+        &nbsp;&nbsp;为了用户使用的便利性，NERV-shop会员卡账号可以用于网站登录使用，登录后无需填写相关信息。
+        <ul>会员功能
+            <li>xxxxxxxx</li>
+            <li>xxxxxxxx</li>
+        </ul>
+        <input style="position: absolute;bottom: 0px" class="btn btn-block btn-danger" value="关于获取会员卡">
+    </div>
+    <div id="header">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;登&nbsp;录</div>
+    <form method="post" action="/checkUserLog" id="f1">
+        <br><br>
+        &nbsp;&nbsp;用户名:<br>
+        &nbsp;&nbsp;<input class="input" type="text" name="username" value="" /><br /><br />
+        &nbsp;&nbsp;密&nbsp;码&nbsp;：<br>
+        &nbsp;&nbsp;<input class="input" type="password" name="psw" />
+        &nbsp;&nbsp;<div th:text="${checklog}" style="color: #ac2925 "></div><hr>
+        <div id="button_gp">
+            <input class="btn btn-success btn-sm"  type="submit" value="登录" name="login" onclick="" />
+            <a href="register"><input class="btn btn-info btn-sm" type="button" value="注册" /></a>
+            <input class="btn btn-warning btn-sm" type="reset" value="重置" />
+        </div>
+    </form>
+</body>
+<script type="text/javascript">
+
+</script>
+</html>

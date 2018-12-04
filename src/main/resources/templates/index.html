@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<link rel="stylesheet" href="/css/bootstrap/dist/css/bootstrap.css">
+<head>
+    <meta charset="UTF-8">
+    <title>NERV-shop</title>
+</head>
+<style type="text/css">
+    *{
+        margin: 0px;
+        padding: 0px;
+    }
+    video{
+        position: fixed;
+        right: 0px;
+        bottom: 0px;
+        min-width: 100%;
+        min-height: 100%;
+        height: auto;
+        width: auto;
+        z-index: -2;
+        /*加滤镜*/
+        /*-webkit-filter: grayscale(100%);*/
+        /*filter:grayscale(100%);*/
+    }
+    source{
+        min-width: 100%;
+        min-height: 100%;
+        height: auto;
+        width: auto;
+    }
+    a{text-decoration:none}
+    .login{
+        position:absolute;
+        right: 50px;
+        font-size: 24px;
+    }
+    #catalog_button{
+        position: absolute;
+        left: 4%;
+        top: 10%;
+    }
+    #menu {
+        width: 20%; height:100%;position:absolute;left: 0;top:0;background-color: #2e6da4;
+    }
+    #catalog{
+        position: relative; top: 30%;left: 20%;
+    }
+    .catalog{
+        font-size: 28px;color: white; font-family: "STHupo";
+    }
+    #menuclose_btn{
+        position: relative;top: 10%;left:0px;
+    }
+    .userinfo{
+        position:absolute;right: 10%;top:5%;
+    }
+    .welcome{
+        font-family: "STHupo";
+        font-size: 24px;
+    }
+    #sns{
+        position: absolute; left: 2%; top:35%;
+    }
+    #news{
+        position: absolute; right: 25%; bottom: 7%;
+    }
+    #news_header{
+        background-color: #2b669a;font-family: "STHupo";color: yellow;font-size: 32px;
+        width: 390px;height: 40px;
+    }
+    #news1{
+        background-color: snow; font-size: 16px; opacity: 0.8;
+        width: 390px;height: 160px;
+    }
+    #news2{
+        position: absolute; right: 1%; bottom: 7%;
+    }
+    #more_btn{
+        position: absolute; right: 3%;top:2.5%
+    }
+</style>
+<body>
+<div class="userinfo">
+    <span id="welcome" class="welcome" style="font-size: 36px;color: #2e6da4;"></span>&nbsp;
+    <a href="/user" id="userwelcome" class="welcome" style="color: #ac2925"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cartlist" id="cart" class="welcome" style="color: yellow"></a>&nbsp;&nbsp;&nbsp;
+    <span id="logout" class="welcome"></span>
+</div><br>
+<div class="login">
+<span id="login">
+    <a href="login"><img src="/img/btn_login.png" height="90px" width="90px"></a>
+</span>&nbsp;
+<span id="adminlogin">
+    <a href="adminlogin"><img src="/img/btn_admin.png" height="90px" width="90px"></a>
+</span>
+</div>
+<img src="/img/btn_menu.png" height="75px" width="75px" id="catalog_button">
+<div id="sns">
+    <div style="position: relative;left:-12%"><img src="/img/cap_sns.png" height="26px" width="96px"></div><br>
+    <div><img src="/img/btn_twitter.png" height="65px" width="85px"></div><br>
+    <div><img src="/img/btn_facebook.png" height="65px" width="85px"></div><br>
+    <div><img src="/img/btn_instagram.png" height="65px" width="85px"></div><br>
+</div>
+<div id="menu">
+    <img src="/img/btn_menuclose.png" height="75px" width="75px" id="menuclose_btn">
+	<ul style="float: left" id="catalog">
+    	<li class="catalog"><a class="catalog" th:href="@{goodslist(tid=1)}"> Comic</a></li><br>
+    	<li class="catalog"><a class="catalog" th:href="@{goodslist(tid=2)}">DVD/Blue-ray</a></li><br>
+    	<li class="catalog"><a class="catalog" th:href="@{goodslist(tid=3)}">CD</a></li><br>
+	</ul>
+	<span id="subul" style="background-color:white; width:5px;height:100%;position:absolute;top:0; right: 0;">
+    </span>
+</div>
+<div id="news">
+    <div id="news_header">&nbsp;&nbsp;NEWS<input value="more" type="button" class="btn btn-warning btn-sm" id="more_btn"></div>
+    <div id="news1">
+        <p style="font-size: 10px;color: #8c8c8c">2018-11-20</p>
+        <a>『ジョジョの奇妙な冒険』　「黄金の風」 第四卷DVD 11/30 发售</a>
+        <p style="font-size: 10px;color: #8c8c8c">2018-11-19</p>
+        <a>The SxPLAY -Memento 12/5 发售</a>
+    </div>
+</div>
+<img src="/img/news2.jpg" id="news2" width="390px" height="200px">
+<video autoplay loop >
+    <source  src="video/eva3 01.mp4" type="video/mp4" >;
+</video>
+</body>
+<script type="text/javascript">
+    $(document).ready(function() {
+        //$.cookie("city") 获取name为city的Cookie的值
+        //$("#city").val(str) 设置id="city"的元素的值为str
+        if($.cookie("username")!= null){
+            $("#userwelcome").html($.cookie("username"));
+            $("#welcome").html("welcome:");
+            $("#cart").html("My list");
+            $("#logout").html("<input type='button' value='logout' onclick='exit()' class='btn btn-warning btn-sm'>");
+            $("#login").hide();
+            $("#adminlogin").hide();
+        }
+    });
+    function exit() {
+        confirm=confirm("Log out?");
+        if(confirm==true){
+            $.cookie("username",'', { expires: -1 });
+            location.href="";
+        }
+    }
+    $(function () {
+        $("#menu").hide();
+        $("#subul").hide();
+    })
+    $("#catalog_button").click(function () {
+        $("#menu").animate({width: 'toggle'},250);
+        $("#subul").animate({height:'toggle'},900);
+    })
+    $("#menuclose_btn").click(function () {
+        $("#menu").animate({width: 'toggle'},500);
+        $("#subul").animate({height:'toggle'},300);
+    })
+</script>
+</html>

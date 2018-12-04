@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" link="/css/bootstrap/dist/css/bootstrap.min.css">
+<script src="/script/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>库存管理员</title>
+</head>
+<body>
+<span id="welcome"></span>
+<span id="userwelcome">
+</span>
+<span id="logout"></span><br>
+<div>
+    <span>
+        <a href="basemanage?func=1" target="_blank">Stock Query</a>
+    </span>
+    <span>
+        <a href="basemanage?func=2" target="_blank">Stock Order</a>
+    </span>
+    <span>
+        <a href="basemanage?func=3" target="_blank">Order in suspense</a>
+    </span>
+    <span>
+        <a href="uploadorder" target="_blank">Upload Order</a>
+    </span>
+</div>
+</body>
+<script>
+    $(document).ready(function() {
+        if($.cookie("role")!="baseadmin"){
+            alert("no permitted!!");
+            location.href="/"
+        }
+        $("#userwelcome").html($.cookie("role"));
+        if($.cookie("role")!= null){
+            $("#welcome").html("welcome:");
+            $("#logout").html("<input type='button' value='logout' onclick='exit()'>");
+        }
+    });
+    function exit() {
+        confirm=confirm("Log out?");
+        if(confirm==true){
+            $.cookie("role",'', { expires: -1 });
+            location.href="/";
+        }
+    }
+</script>
+</html>

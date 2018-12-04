@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" link="/css/bootstrap/dist/css/bootstrap.min.css">
+<script src="/script/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>库存管理</title>
+</head>
+<style>
+    td{
+        width: 100px;
+    }
+</style>
+<body>
+<span id="welcome"></span>
+<span id="userwelcome">
+
+</span>
+Query By Type:<select id="s1" name="s1">
+    <option value='0' >ALL</option>
+</select><br><br>
+<div>
+    <span>
+        <a href="basemanage?func=1">Stock Query</a>
+    </span>
+    <span>
+        <a href="basemanage?func=2">Stock Order</a>
+    </span>
+    <span>
+        <a href="basemanage?func=3">Order in suspense</a>
+    </span>
+    <span>
+        <a href="uploadorder">Upload Order</a>
+    </span>
+</div>
+<table id="list">
+
+</table>
+<hr><br>
+<div>Goods Query:enter the good's id<br>
+    <input id="gid" value="">
+    <input type="button" value="confirm" onclick="goodsQuery()">
+    <div id="goodslist" th:text="${listinfo}">
+
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        var str="" ;
+        $.ajax({
+            type:"POST",
+            url:"/getType",
+            success:function (list) {
+                str+="<option value='0'>All</option>"
+                $.each(list,function (i,value) {
+                    str+="<option value='"+value.typeid+"'>"+value.typename+"</option>";
+                })
+                $("#s1").html(str);
+            }
+        })
+    })
+    function goodsQuery(){
+        var str="";
+        var gid=parseInt($("#gid").val());
+        $.ajax({
+            type:"POST",
+            url:"/goodsDetail",
+            data:{gid:gid},
+            success:function (list) {
+                str+="<span>"+list[0].goodsname+"</span>&nbsp;&nbsp;"+
+                    "<span>price:"+list[0].price+"</span>&nbsp;&nbsp;"+
+                    "<span>stock:"+list[0].stock+"</span>";
+                $("#goodslist").html(str);
+            }
+        });
+    };
+    var adminid=$.cookie("adminid");
+    adminid=parseInt(adminid);
+    var row=new Array();
+    var num=new Array();
+    var gid=new Array();
+    var stockorder=[];
+    function confirmStockOrder () {
+        $.each($('input:checkbox:checked'),function (i,value){
+            num[i]=$(this).parent("td").parent("tr").find("[name='num']").html();
+            gid[i]=$(this).parent("td").parent("tr").find("[name='gid']").html();
+            row[i] = $(this).val();
+            var submitid={ };
+            submitid["oid"]=row[i];//设置key 用 submitid["xxx"]=row[i]
+            submitid["num"]=num[i];
+            submitid["gid"]=gid[i];
+            stockorder[i]=submitid;
+        });
+        var submitStr = JSON.stringify(stockorder);
+        $.ajax({
+            type:"POST",
+            url:"/confirmStockOrders",
+            data:{submitid:submitStr,adminid:adminid},
+            success:function () {
+                alert("Sucess!");
+                location.reload();
+            }
+        })
+    }
+    Request = {
+        QueryString : function(item){
+            var svalue = location.search.match(new RegExp("[\?\&]" + item + "=([^\&]*)(\&?)","i"));
+            return svalue ? svalue[1] : svalue;
+        }
+    };
+
+    var func=Request.QueryString("func");
+    var tid=parseInt(s1.value);
+    if(func==1){
+        var str="<tr><td>商品号</td><td>库存</td></tr>";
+        $.ajax({
+            type:"POST",
+            url:"/goodsList",
+            data:{tid:tid},
+            success:function (list) {
+                $.each(list,function (i,n) {
+                    str+= "<tr><td>"+n.goodsid+"</td><td>"+n.stock+"</td></tr>"
+                })
+                $("#list").html(str);
+            }
+        })
+        $("#s1").change(function () {
+            var tid=parseInt(s1.value);
+            str='<tr><td>商品号</td><td>库存</td></tr>';
+            $.ajax({
+                type:"POST",
+                url:"/goodsList",
+                data:{tid:tid},
+                success:function (list) {
+                    $.each(list,function (i,n) {
+                        str+= "<tr><td>"+n.goodsid+"</td><td>"+n.stock+"</td></tr>"
+                    });
+                    $("#list").html(str);
+                }
+            })
+        });
+    }
+    if(func==2){
+        var str="<tr><td>订单号</td><td>商品号</td><td>数量</td><td>日期</td><td>供应商</td><td>联系方式</td><td>是否处理</td></tr>";
+        $.ajax({
+            type:"POST",
+            url:"/getAllOrders",
+            data:{tid:tid},
+            success:function (list) {
+                $.each(list,function (i,n) {
+                    str+= "<tr><td>"+n.orderid+"</td><td>"+n.goodsid+"</td><td>"+n.ordernum+"</td>"+
+                        "<td>"+n.orderdate.toString()+"</td><td>"+n.supply+"</td><td>"+n.supplyTel+"</td><td>"+n.status+"</td></tr>"
+                })
+                $("#list").html(str);
+            }
+        });
+        $("#s1").change(function () {
+            var tid = parseInt(s1.value);
+            str = '<tr><td>订单号</td><td>商品号</td><td>数量</td><td>日期</td><td>供应商</td><td>联系方式</td><td>是否处理</td></tr>';
+            $.ajax({
+                type:"POST",
+                url:"/getAllOrders",
+                data:{tid:tid},
+                success:function (list) {
+                    $.each(list,function (i,n) {
+                        str+= "<tr><td>"+n.orderid+"</td><td>"+n.goodsid+"</td><td>"+n.ordernum+"</td>"+
+                            "<td>"+n.orderdate.toString()+"</td><td>"+n.supply+"</td><td>"+n.supplyTel+"</td><td>"+n.status+"</td></tr>"
+                    })
+                    $("#list").html(str);
+                }
+            })
+        })
+    }
+    if(func==3){
+        var str="<tr><td></td><td>订单号</td><td>商品号</td><td>数量</td><td>日期</td><td>供应商</td><td>联系方式</td></tr>";
+        $.ajax({
+            type:"POST",
+            url:"/getStockOrders",
+            data:{tid:tid},
+            success:function (list) {
+                $.each(list,function (i,n) {
+                    str+= "<tr><td><input type='checkbox' id='choice"+n.salesid+"' class='choice' value='"+n.orderid+"'/></td><td>"+n.orderid+"</td><td name='gid'>"+n.goodsid+"</td><td name='num'>"+n.ordernum+"</td>"+
+                        "<td>"+n.orderdate.toString()+"</td><td>"+n.supply+"</td><td>"+n.supplyTel+"</td></tr>"
+                })
+                str+="<tr><td><input type='button' id='confirm' value='confirm' onclick='confirmStockOrder()'/></td></tr>";
+                $("#list").html(str);
+            }
+        });
+        $("#s1").change(function () {
+            var tid = parseInt(s1.value);
+            str = '<tr><td></td><td>订单号</td><td>商品号</td><td>数量</td><td>日期</td><td>供应商</td><td>联系方式</td></tr>';
+            $.ajax({
+                type:"POST",
+                url:"/getStockOrders",
+                data:{tid:tid},
+                success:function (list) {
+                    $.each(list,function (i,n) {
+                        str+= "<tr><td><input type='checkbox' id='choice"+n.salesid+"' class='choice' value='"+n.orderid+"'/></td><td>"+n.orderid+"</td><td name='gid'>"+n.goodsid+"</td><td name='num'>"+n.ordernum+"</td>"+
+                            "<td>"+n.orderdate.toString()+"</td><td>"+n.supply+"</td><td>"+n.supplyTel+"</td></tr>"
+                    })
+                    str+="<tr><td><input type='button' id='confirm' value='confirm' onclick='confirmStockOrder()'/></td></tr>";
+                    $("#list").html(str);
+                }
+            })
+        })
+    }
+</script>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/bootstrap/dist/css/bootstrap.css" />
+<script src="/script/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情</title>
+</head>
+<style>
+    pre{
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+    }
+    a{text-decoration:none}
+    #page_header{
+        position: absolute;left:23%;top:5%;width: 50%;
+    }
+    .header_1{
+        width:190px;font-size: 22px;font-family: "STXinwei";color: #0f0f0f;
+    }
+    #text{
+        float: right;position:relative;left: 5%;
+    }
+    #intro{
+        font-size: 16px;
+    }
+    .count{
+       font-size: 22px;height:3%;
+    }
+    li{width: 40px}
+</style>
+<body style="background-color: #f2dede;opacity: 80%">
+<div id="page_header">
+    <table>
+        <tr>
+            <td width="200px"><a href="/"><img src="/img/nerv.png" id="logo" width="150px" height="150px"></a></td>
+            <td class="header_1"><a href="/" class="header_1">Index</a></td>
+            <td class="header_1">News</td>
+            <td class="header_1"><a href="/goodslist?tid=1" class="header_1">Comic</a></td>
+            <td class="header_1" align="left"><a href="/goodslist?tid=2" class="header_1">DVD/Blue-ray</a></td>
+            <td class="header_1" align="center"><a href="/goodslist?tid=3" class="header_1">CD</a></td>
+            <td width="70px" id="btn_login"><a href="/login"><img src="/img/btn_login.png" width="50px" height="50px"></a></td>
+            <td id="btn_admin" class="header_1"><img src="/img/btn_register.png" width="50px" height="50px"></td>
+            <td><a id="userwelcome" align="right" class="header_1" style="color: #2b669a;font-size: 24px" href="/user"></a></td>
+            <td id="logout" width="70px" ></td>
+            <td><a id="cart" href="cartlist"  width="80px"></a></td>
+        </tr>
+    </table>
+</div>
+<div style="position: absolute;left:20%;top: 25%">
+    <span id="img">
+    </span>
+    <span id="text">
+    <div id="goodsname">
+    </div>
+    <div id="intro">
+    </div><hr style="height: 2px;">
+    <div id="func">
+    </div>
+    </span>
+</div>
+</body>
+<script type="text/javascript">
+    var stock;
+    $(document).ready(function() {
+        $("#userwelcome").html($.cookie("username"));
+        if($.cookie("username")!= null){
+            $("#cart").html("<input class='btn btn-warning btn-sm' type='button' value='My Cart'>");
+            $("#logout").html("<input class='btn btn-danger btn-sm' type='button' value='logout' onclick='exit()'>");
+            $("#btn_login").hide();
+            $("#btn_admin").hide();
+        }
+    });
+    function exit() {
+        confirm=confirm("Log out?");
+        if(confirm==true){
+            $.cookie("username",'', { expires: -1 });
+            location.href="";
+        }
+    }
+    Request = {
+        QueryString : function(item){
+            var svalue = location.search.match(new RegExp("[\?\&]" + item + "=([^\&]*)(\&?)","i"));
+            return svalue ? svalue[1] : svalue;
+        }
+    };
+
+    var gid=Request.QueryString("gid");
+    $(function () {
+        var str='';
+        var str1='';
+        var str2='';
+        var str3='';
+        $.ajax({
+            type:"POST",
+            data:{gid:gid},
+            url:"/goodsDetail",
+            success:function (list) {
+                    str += "<img style='width:392px;height:476px' src=" + list[0].img1 + ">";
+                    str1 += "<div><b style='font-size: 24px'>" + list[0].goodsname + "</b></div><br><br>"
+                    str3 += "<div><span style='font-size: 20px;'>CNY"+list[0].price+"</span>&nbsp;"+
+                            "<span style='font-size: 12px;height: 400px' id='stock'>(The Stock:"+list[0].stock+")</span></div><br/>"+
+                            "<table class='count'>" +
+                              "<tr><td rowspan='2'>数量</td><td rowspan='2'><input style='width: 40px' type='text' class='input_num' id='input_num' value='1' readonly='readonly'/></td>" +
+                              "<td onclick='plus()'><a href='#'><span id='plus' class='glyphicon  glyphicon-chevron-up'></span></a></td></tr>" +
+                              "<tr><td onclick='minus()'><a href='#'><span id='minus' class='glyphicon glyphicon-chevron-down'></span></a></td></tr>" +
+                            "</table><br><br>"+
+                            "<input class='btn btn-info btn-lg' type='button' onclick='setCart()' value='put in your list' />";
+                    str2+="<pre width='50%'>"+list[0].intro+"</pre><input name='input_gid' id='input_gid' style='visibility: hidden' value='"+list[0].goodsid+"'/>"+
+                           "<input id='input_img' style='visibility: hidden' value='"+list[0].img1+"'/>"+
+                           "<input id='input_price' style='visibility: hidden' value='"+list[0].price+"'/>"+
+                           "<input id='input_name' style='visibility: hidden' value='"+list[0].goodsname+"'/>";
+                    $("#img").html(str);
+                    $("#goodsname").html(str1);
+                    $("#func").html(str3);
+                    $("#intro").html(str2);
+                    stock=list[0].stock;
+            }
+        })
+    })
+    function minus (){
+        if(input_num.value > 1){
+            input_num.value=parseInt(input_num.value)-1
+        }
+    }
+    function plus (){
+        if(input_num.value< stock ){
+            input_num.value=parseInt(input_num.value)+1
+        }
+    }
+    function setCart() {
+        if($.cookie("userid")== null){
+            alert("login first");
+            location.href="login";
+        }
+        var goodsid=parseInt(input_gid.value);
+        var amount=parseInt(input_num.value);
+        var userid=parseInt($.cookie("userid"));
+        var goodsname=input_name.value;
+        var price=parseInt(input_price.value);
+        var img=input_img.value;
+        $.ajax({
+            type:"POST",
+            data:{goodsid:goodsid,amount:amount,customerid:userid},
+            url:"/setCart",
+            aynsc:true,
+            success:function () {
+                alert("Goods had been to put in the cart!");
+                location.reload();
+            }
+        });
+
+    }
+</script>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" link="/css/bootstrap/dist/css/bootstrap.min.css">
+<script src="/script/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>管理员入口</title>
+</head>
+<body>
+<form method="post" action="/checkAdminLog" name="f1">
+    用户名:<input class="input" type="text" name="adminname" value="" /><br /><br />
+    密&nbsp;码&nbsp;：<input class="input" type="password" name="psw" /><br /><br />
+    <div>
+        <input class="btn btn-info btn-sm"  type="submit" value="登录" name="login" onclick="" />
+        <input class="btn btn-info btn-sm" type="reset" value="重置" />
+    </div>
+</form>
+<div th:text="${check}" style="color: #ac2925"></div>
+
+</body>
+<script>
+    $(function () {
+        if($.cookie("role")!=null){
+            var str=$.cookie("role");
+            location.href=str;
+        }
+
+    })
+</script>
+</html>

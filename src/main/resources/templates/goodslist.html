@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/bootstrap/dist/css/bootstrap.css" />
+<script src="/script/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>商品列表</title>
+</head>
+<style>
+    a{text-decoration:none}
+    #page_header{
+        position: absolute;left:23%;top:5%;width: 50%;
+    }
+    .header_1{
+        width:190px;font-size: 22px;font-family: "STXinwei";color: #0f0f0f;
+    }
+    #goodslist{
+        position: absolute;width: 100%;top:25%;left: 0;font-family: "STZhongsong";
+    }
+    #list{
+        width: 30%;position:relative;left:33%;
+    }
+    td{font-family: "STZhongsong";font-size: 18px;height: 110px}  /* 不影响header1
+</style>
+<body style="background-color: #f2dede;opacity: 80%">
+<div id="page_header">
+    <table>
+        <tr>
+            <td width="200px"><a href="/"><img src="/img/nerv.png" id="logo" width="150px" height="150px"></a></td>
+            <td class="header_1"><a href="/" class="header_1">Index</a></td>
+            <td class="header_1">News</td>
+            <td class="header_1"><a href="/goodslist?tid=1" class="header_1">Comic</a></td>
+            <td class="header_1" align="left"><a href="/goodslist?tid=2" class="header_1">DVD/Blue-ray</a></td>
+            <td class="header_1" align="center"><a href="/goodslist?tid=3" class="header_1">CD</a></td>
+            <td width="70px" id="btn_login"><a href="/login"><img src="/img/btn_login.png" width="50px" height="50px"></a></td>
+            <td id="btn_admin" class="header_1"><img src="/img/btn_register.png" width="50px" height="50px"></td>
+            <td><a id="userwelcome" align="right" class="header_1" style="color: #2b669a;font-size: 24px" href="/user"></a></td>
+            <td id="logout" width="70px"></td>
+            <td><a id="cart" href="cartlist"  width="80px"></a></td>
+        </tr>
+    </table>
+</div>
+<div id="goodslist">
+<div style="position: absolute;left: 25%;top:-5%">Query By Type:
+    <select id="s1" name="s1">
+    <option value='0' >未选择</option>
+    </select>
+</div><br><br>
+<div th:text="${listinfo}"></div>
+<table id="list">
+
+</table>
+</div>
+
+</body>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#userwelcome").html($.cookie("username"));
+        if($.cookie("username")!= null){
+            $("#cart").html("<input class='btn btn-warning btn-sm' type='button' value='My Cart'>");
+            $("#logout").html("<input class='btn btn-danger btn-sm' type='button' value='logout' onclick='exit()'>");
+            $("#btn_login").hide();
+            $("#btn_admin").hide();
+        }
+    });
+    function exit() {
+        confirm=confirm("Log out?");
+        if(confirm==true){
+            $.cookie("username",'', { expires: -1 });
+            location.href="";
+        }
+    }
+    Request = {
+            QueryString : function(item){
+                var svalue = location.search.match(new RegExp("[\?\&]" + item + "=([^\&]*)(\&?)","i"));
+                return svalue ? svalue[1] : svalue;
+            }
+        };
+
+     var tid=Request.QueryString("tid");
+    $(function () {
+        var str='';
+        $.ajax({
+            type:"POST",
+            data:{tid:tid},
+            url:"/goodsList",
+            success:function (list) {
+                $.each(list,function(i,n) {//i是索引，n是值
+                    str += "<tr><td>" + "<a href='goodsdetail?gid="+n.goodsid+"'>"+
+                           "<img height='100px' width='80px' src=" + n.img1 + "></a>" + "</td>" +
+                           "<td>" + n.goodsname + "</td><td>CNY&nbsp;"+n.price+"</td></tr>";
+                    $("#list").html(str);
+                });
+            }
+        })
+    })
+    $("#s1").change(function () {
+        var tid=parseInt(s1.value);
+        str='';
+        $.ajax({
+            type:"POST",
+            data:{tid:tid},
+            url:"/goodsList",
+            success:function (list) {
+                $.each(list,function(i,n) {//i是索引，n是值
+                    str += "<tr><td>" + "<a href='goodsdetail?gid="+n.goodsid+"'>"+
+                        "<img height='100px' width='80px' src=" + n.img1 + "></a>" + "</td>" +
+                        "<td>" + n.goodsname + "</td></tr>";
+                    $("#list").html(str);
+                });
+            }
+        })
+    })
+    $(function () {
+        var str="" ;
+        $.ajax({
+            type:"POST",
+            url:"/getType",
+            success:function (list) {
+                str+="<option>按分类查询</option><option value='0'>All</option>"
+                $.each(list,function (i,value) {
+                    str+="<option value='"+value.typeid+"'>"+value.typename+"</option>";
+                })
+                $("#s1").html(str);
+            }
+        })
+
+    })
+</script>
+</html>
