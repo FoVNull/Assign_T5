@@ -132,25 +132,16 @@
             }
         })
     };
+    var total=0;
+    var price=new Array();
     var getprice=function getPrice () {
         $.each($('input:checkbox:checked'),function (i,value){
-            //alert($(this).val());
-            row[i] = $(this).val();
-            var priceid={};
-            priceid=row[i];//设置key 用 submitid["xxx"]=row[i]
-            userorder[i]=priceid;
+            price[i]=$(this).parent("div").find("[name='put_price']").html();
+            total+=parseInt(price[i]);
         });
-        var priceStr = JSON.stringify(userorder);
-       $.ajax({
-           type:"POST",
-           url:"/priceQuery",
-           data:{priceid:priceStr},
-           success:function (list) {
-               $("#total").html(list);
-               userorder=[];//重置不能忘了
-           }
-       })
+        $("#total").html(total);
+        total=parseInt(0);
     }
-    setInterval(getprice,1000);
+    setInterval(getprice,500);
 </script>
 </html>
