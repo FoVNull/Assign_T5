@@ -1,43 +1,49 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<link rel="stylesheet" link="/css/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap/dist/css/bootstrap.css" />
 <script src="/script/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="/script/jquery-cookie/jquery.cookie.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>销售管理</title>
 </head>
-<body>
+<style>
+    #all{
+        position: absolute;left:30%;
+    }
+</style>
+<body background="/img/admin_bg.jpg">
+<div id="all">
 Query By Type:<select id="s1" name="s1">
     <option value='0' >ALL</option>
-</select><br><br>
+</select><br><br><br>
 <div>
     <span>
-        <a href="salesmanage?func=1">Order in suspense</a>
+        <a href="salesmanage?func=1"><input type="button" class="btn btn-primary" value="Order in suspense"></a>
     </span>
     <span>
-        <a href="salesmanage?func=4">Sales Order List</a>
+        <a href="salesmanage?func=4"><input type="button" class="btn btn-primary" value="Sales Order List"></a>
     </span>
     <span>
-        <a href="salesmanage?func=2">Sales Amount Statics</a>
+        <a href="salesmanage?func=2"><input type="button" class="btn btn-primary" value="Sales Amount Statics"></a>
     </span>
     <span>
-        <a href="salesmanage?func=3">Edit Goods Info</a>
+        <a href="salesmanage?func=3"><input type="button" class="btn btn-primary" value="Edit Goods Info"></a>
     </span>
     <span>
-        <a href="newgoods" target="_blank">Put new Goods</a>
+        <a href="newgoods" target="_blank"><input type="button" class="btn btn-primary" value="Put new Goods"></a>
     </span>
 </div>
-<table id="list">
+<table id="list" width="100%">
 
 </table>
 <hr><br>
-<div>Goods Query:enter the good's id<br>
-    <input id="gid" value="">
-    <input type="button" value="confirm" onclick="goodsQuery()">
-    <div id="goodslist" th:text="${listinfo}">
-
+<div style="width: 30%">Goods Query:enter the good's id<br>
+    <input class="input form-control" id="gid" value="">
+    <input class="btn btn-success" type="button" value="confirm" onclick="goodsQuery()">
+    <div style="width: 230%" id="goodslist" th:text="${listinfo}">
     </div>
+</div>
 </div>
 </body>
 <script type="text/javascript">
@@ -63,9 +69,9 @@ Query By Type:<select id="s1" name="s1">
             url:"/goodsDetail",
             data:{gid:gid},
             success:function (list) {
-                str+="<span>"+list[0].goodsname+"</span>&nbsp;&nbsp;"+
-                     "<span>price:"+list[0].price+"</span>&nbsp;&nbsp;"+
-                     "<span>stock:"+list[0].stock+"</span>";
+                str += "<span>" + list[0].goodsname + "</span>&nbsp;&nbsp;" +
+                    "<span>price:" + list[0].price + "</span>&nbsp;&nbsp;" +
+                    "<span>stock:" + list[0].stock + "</span>";
                 $("#goodslist").html(str);
             }
         });
@@ -105,7 +111,7 @@ Query By Type:<select id="s1" name="s1">
 
     if(func==1){
         var str="<tr><td></td><td>订单号</td><td>商品号</td><td>用户id</td><td>购买数量</td><td>下单日期</td></tr>";
-        $(function () {
+        function getSuspend () {
             $.ajax({
                 type:"POST",
                 url:"/getSalesList",
@@ -115,32 +121,21 @@ Query By Type:<select id="s1" name="s1">
                         str+= "<tr><td><input type='checkbox' id='choice"+n.salesid+"' class='choice' value='"+n.salesid+"'/></td><td>"+n.salesid+"</td><td>"+n.goodsid+"</td><td>"+n.customerid+"</td>"+
                             "<td>"+n.salenum+"</td><td>"+n.saledate.toString()+"</td></tr>"
                     });
-                    str+="<input type='button' id='confirm' value='confirm' onclick='confirmSaleOrder()'/>";
+                    str+="<tr><td><input type='button' id='confirm' value='confirm' onclick='confirmSaleOrder()' class='btn btn-info'/></td></tr>";
                     $("#list").html(str);
                 }
             })
-        });
+        }
+        $(getSuspend());
         $("#s1").change(function () {
-            var tid=parseInt(s1.value);
             str="<tr><td></td><td>订单号</td><td>商品号</td><td>用户id</td><td>购买数量</td><td>下单日期</td></tr>";
-            $.ajax({
-                type:"POST",
-                url:"/getSalesList",
-                data:{tid:tid},
-                success:function (list) {
-                   $.each(list,function (i,n) {
-                       str+= "<tr><td><input type='checkbox' id='choice"+n.salesid+"' class='choice' value='"+n.salesid+"'/></td><td>"+n.salesid+"</td><td>"+n.goodsid+"</td><td>"+n.customerid+"</td>"+
-                           "<td>"+n.salenum+"</td><td>"+n.saledate.toString()+"</td></tr>"
-                   });
-                    str+="<input type='button' id='confirm' value='confirm' onclick='confirmSaleOrder()'/>";
-                    $("#list").html(str);
-                }
-            })
+            tid = parseInt(s1.value);
+            getSuspend()
         });
     }
     if(func==2){
         str="<tr><td>商品id</td><td>销量</td><td>总价</td><td>类别</td></tr>";
-        $(function () {
+        function getStatic () {
             $.ajax({
                 type:"POST",
                 url:"/getAmountList",
@@ -152,26 +147,17 @@ Query By Type:<select id="s1" name="s1">
                     $("#list").html(str);
                 }
             })
-        });
+        };
+        $(getStatic());
         $("#s1").change(function () {
-            var tid=parseInt(s1.value);
             str="<tr><td>商品id</td><td>销量</td><td>总价</td><td>类别</td></tr>";
-            $.ajax({
-                type:"POST",
-                url:"/getAmountList",
-                data:{tid:tid},
-                success:function (list) {
-                    $.each(list,function (i,n) {
-                        str+= "<tr><td>"+n.goodsid+"</td><td>"+n.salenum+"</td><td>"+n.saleprice+"</td><td>"+n.typename+"</td></tr>"
-                    })
-                    $("#list").html(str);
-                }
-            })
+            tid=parseInt(s1.value);
+            getStatic();
         })
     };
     if(func==3){
         var str="";
-        $(function () {
+        function getGoodsList () {
             $.ajax({
                 type:"POST",
                 data:{tid:tid},
@@ -185,28 +171,17 @@ Query By Type:<select id="s1" name="s1">
                     });
                 }
             })
-        });
+        };
+        $(getGoodsList());
         $("#s1").change(function () {
-            var tid=parseInt(s1.value);
-            str='';
-            $.ajax({
-                type:"POST",
-                data:{tid:tid},
-                url:"/goodsList",
-                success:function (list) {
-                    $.each(list,function(i,n) {//i是索引，n是值
-                        str += "<tr><td width='100px' id='gid'><a href='goodsdetail?gid="+n.goodsid+"' target='_blank'>"+n.goodsid+"</a></td><td width='350px'>" + n.goodsname + "</td>"+
-                            "<td width='85px'>￥"+n.price+"</td><td width='85px'>Stock:"+n.stock+"</td>"+
-                            "<td><a href='editgoods?gid="+n.goodsid+"'>Edit</a></td></tr>";
-                        $("#list").html(str);
-                    });
-                }
-            })
+            str="";
+            tid=parseInt(s1.value);
+            getGoodsList();
         })
     }
     if(func==4){
-        var str="<tr><td>订单号</td><td>商品号</td><td>用户id</td><td>购买数量</td><td width='130px'>下单日期</td><td>是否处理</td></tr>";
-        $(function () {
+        var str="<tr><td>订单号</td><td>商品号</td><td>用户id</td><td>购买数量</td><td width='130px'>下单日期</td><td>是否处理</td><td>处理日期</td><td>处理人</td></tr>";
+        function getOrders () {
             $.ajax({
                 type:"POST",
                 url:"/getAllList",
@@ -214,27 +189,17 @@ Query By Type:<select id="s1" name="s1">
                 success:function (list) {
                     $.each(list,function (i,n) {
                         str+= "<tr><td>"+n.salesid+"</td><td>"+n.goodsid+"</td><td>"+n.customerid+"</td>"+
-                            "<td>"+n.salenum+"</td><td>"+n.saledate.toString()+"</td><td>"+n.status+"</td></tr>"
+                            "<td>"+n.salenum+"</td><td>"+n.saledate.toString()+"</td><td>"+n.status+"</td><td>"+n.completedate+"</td><td>"+n.adminid+"</td></tr>"
                     });
                     $("#list").html(str);
                 }
             })
-        });
+        };
+        $(getOrders());
         $("#s1").change(function () {
-            var tid=parseInt(s1.value);
-            str="<tr><td>订单号</td><td>商品号</td><td>用户id</td><td>购买数量</td><td width='130px'>下单日期</td><td>是否处理</td></tr>";
-            $.ajax({
-                type:"POST",
-                url:"/getAllList",
-                data:{tid:tid},
-                success:function (list) {
-                    $.each(list,function (i,n) {
-                        str+= "<tr><td>"+n.salesid+"</td><td>"+n.goodsid+"</td><td>"+n.customerid+"</td>"+
-                            "<td>"+n.salenum+"</td><td>"+n.saledate.toString()+"</td><td>"+n.status+"</td></tr>"
-                    });
-                    $("#list").html(str);
-                }
-            })
+            str="<tr><td>订单号</td><td>商品号</td><td>用户id</td><td>购买数量</td><td width='130px'>下单日期</td><td>是否处理</td><td>处理日期</td><td>处理人</td></tr>";
+            tid=parseInt(s1.value);
+            getOrders();
         });
     }
 </script>

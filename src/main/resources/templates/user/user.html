@@ -74,7 +74,7 @@
         getList();
     });
     function getList () {
-        str="<tr><td>商品名</td><td>数量</td><td>总价</td><td>时间</td></tr>";
+        str="<tr><td>商品名</td><td>数量</td><td>总价</td><td>下单时间</td></tr>";
         $.ajax({
             type:"POST",
             data:{userid:userid},
@@ -88,14 +88,14 @@
         })
     }
     function getHisList() {
-        str="<tr><td>商品名</td><td>数量</td><td>总价</td><td>时间</td></tr>";
+        str="<tr><td>商品名</td><td>数量</td><td>总价</td><td>下单时间</td><td>完成时间</td></tr>";
         $.ajax({
             type:"POST",
             url:"/getHistList",
             data:{userid:userid},
             success:function(list){
                 $.each(list,function (i,n) {
-                    str+= "<tr><td>"+n.goodsname+"</td><td>"+n.salenum+"</td><td>"+n.saleprice+"</td><td>"+n.saledate+"</td></tr>";
+                    str+= "<tr><td>"+n.goodsname+"</td><td>"+n.salenum+"</td><td>"+n.saleprice+"</td><td>"+n.saledate+"</td><td>"+n.completedate+"</td></tr>";
                 });
                 $("#orderlist").html(str);
             }

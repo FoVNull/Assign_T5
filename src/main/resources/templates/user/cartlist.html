@@ -79,13 +79,13 @@
             data:{customerid:userid},
             success:function (cartlist) {
                 $.each(cartlist,function (i,list){
-                    str+="<input type='checkbox' id='choice"+list.cartid+"' class='choice' value='"+list.cartid+"'/>"+
+                    str+="<div><input type='checkbox' id='choice"+list.cartid+"' class='choice' value='"+list.cartid+"'/>"+
                         "<img style='height:100px;width:80px' src='"+list.img1+"'/>"+
                         "<span id='put_name'>"+list.goodsname+"</span>"+"<span>&nbsp;&nbsp;amount:"+list.amount+"</span>" +
-                        "<span id='put_price'>&nbsp;&nbsp;CNY&nbsp;"+list.price*list.amount+"</span>"+
+                        "<span>&nbsp;&nbsp;CNY&nbsp;</span><span id='put_price' name='put_price'>"+list.price*list.amount+"</span>"+
                         "<span id='put_goodsid' style='visibility: hidden'>"+list.goodsid+"</span>" +
                         "<input id='put_amount' class='amount' style='visibility: hidden' value='"+list.amount +"'/>"+
-                        "<input id='put_stock' class='stock' style='visibility: hidden' value='"+list.stock +"'/><br>";
+                        "<input id='put_stock' class='stock' style='visibility: hidden' value='"+list.stock +"'/></div><br>";
                     $("#cartlist").html(str);
                 })
             }
@@ -132,25 +132,16 @@
             }
         })
     };
+    var total=0;
+    var price=new Array();
     var getprice=function getPrice () {
         $.each($('input:checkbox:checked'),function (i,value){
-            //alert($(this).val());
-            row[i] = $(this).val();
-            var priceid={};
-            priceid=row[i];//设置key 用 submitid["xxx"]=row[i]
-            userorder[i]=priceid;
+            price[i]=$(this).parent("div").find("[name='put_price']").html();
+            total+=parseInt(price[i]);
         });
-        var priceStr = JSON.stringify(userorder);
-       $.ajax({
-           type:"POST",
-           url:"/priceQuery",
-           data:{priceid:priceStr},
-           success:function (list) {
-               $("#total").html(list);
-               userorder=[];//重置不能忘了
-           }
-       })
+        $("#total").html(total);
+        total=parseInt(0);
     }
-    setInterval(getprice,1000);
+    setInterval(getprice,500);
 </script>
 </html>
